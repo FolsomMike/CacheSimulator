@@ -14,6 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define NTRACE_LINE_PARAMS 4
+
 typedef enum { TRACE_SUCCESS, TRACE_FAILURE, TRACE_END } TraceStatus;
 typedef enum { LOAD, STORE } AccessType;
 
@@ -28,6 +30,7 @@ struct memory_access {
 } memacc;
 
 TraceStatus begin_trace(char *filename);
-TraceStatus get_next_trace();
+TraceStatus get_next_trace(int *cycle_count);
+TraceStatus end_trace();
 
 #endif

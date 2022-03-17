@@ -13,6 +13,40 @@
 
 #include "config.h"
 
+void verifyConfigParams() {
+
+	if (cfg.line_size <= 0) {
+		printf("invalid line size parameter\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if (cfg.associativity < 0) {
+		printf("invalid associativity parameter\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if (cfg.data_size <= 0) {
+		printf("invalid data size parameter\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if (cfg.replace_policy != 0 && cfg.replace_policy != 1) {
+		printf("invalid replace policy parameter\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if (cfg.miss_penalty <= 0) {
+		printf("invalid miss penalty parameter\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if (cfg.write_alloc != 0 && cfg.write_alloc != 1) {
+		printf("invalid write allocate parameter\n");
+		exit(EXIT_FAILURE);
+	}
+
+}
+
 /**
  * reads config, stores config parameters in global config struct
  * @param  filename               config filename
@@ -33,6 +67,12 @@ ConfigStatus read_config(char *filename) {
 
 	// read parameters from config file
 	// use temporary array for cleaner code
+
+	#if CONFIG_VERBOSE == 1
+	printf("\n");
+	printf("Reading config file:\n");
+	#endif // CONFIG_VERBOSE
+
 	int temp_configs[NCONFIG_PARAMS];
 	for (int i = 0; i < NCONFIG_PARAMS; i++) {
 		if ((read = getline(&line, &len, config_file)) == -1) {
@@ -41,7 +81,9 @@ ConfigStatus read_config(char *filename) {
 			fclose(config_file);
 			return CONFIG_FAILURE;
 		}
-		printf("line: %s\n", line);
+		#if CONFIG_VERBOSE == 1
+		printf("read line: %s", line);
+		#endif // CONFIG_VERBOSE
 		sscanf(line, "%d", &temp_configs[i]);
 	}
 
@@ -54,8 +96,10 @@ ConfigStatus read_config(char *filename) {
 	cfg.write_alloc    = temp_configs[5];
 
 	// print the config params to verify success
-	#if CONFIG_VERBOSE
-	printf("line_size: %d\n", cfg.line_size);
+	#if CONFIG_VERBOSE == 1
+	printf("\n");
+	printf("Config info:");
+	printf("\nline_size: %d\n", cfg.line_size);
 	printf("associativity: %d\n", cfg.associativity);
 	printf("data_size: %d\n", cfg.data_size);
 	printf("replace_policy: %d\n", cfg.replace_policy);
@@ -65,6 +109,9 @@ ConfigStatus read_config(char *filename) {
 
 	if (line) free(line);
 	fclose(config_file);
+
+	verifyConfigParams();
+
 	return CONFIG_SUCCESS;
 
 }
