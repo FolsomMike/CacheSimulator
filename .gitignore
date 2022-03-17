@@ -1,3 +1,6 @@
+# ignore the trace files because they are huge
+traces/
+
 # Prerequisites
 *.d
 
